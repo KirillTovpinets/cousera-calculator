@@ -1,23 +1,101 @@
-import logo from './logo.svg';
-import './App.css';
+import { useState } from "react";
+import styles from "./App.module.css";
 
 function App() {
+  const buttons = [
+    ["AC", "+/-", "/"],
+    ["7", "8", "9", "x"],
+    ["4", "5", "6", "-"],
+    ["1", "2", "3", "+"],
+    ["0", ".", "", "="],
+  ];
+
+  const [value, setValue] = useState();
+  const [savedValue, setSavedValue] = useState();
+  const [operation, setOperation] = useState();
+  const [executed, setExecuted] = useState(false);
+
+  const executeOperation = () => {
+    let result;
+    if (!savedValue) {
+      return value;
+    }
+    switch (operation) {
+      case "+": {
+        result = value + savedValue;
+        break;
+      }
+      case "-": {
+        result = savedValue - value;
+        break;
+      }
+      case "x": {
+        result = value * savedValue;
+        break;
+      }
+      case "/": {
+        result = value / savedValue;
+        break;
+      }
+    }
+    setOperation(null);
+    setExecuted(true);
+    setValue(result);
+    debugger;
+    return result;
+  };
+  const handleButtonClick = (e) => {
+    if (value === "") {
+      return;
+    }
+
+    const button = e.target.innerHTML;
+
+    if (!isNaN(parseInt(button))) {
+      if (!!operation || executed) {
+        setValue(parseInt(button));
+        setExecuted(false);
+      } else {
+        setValue(parseInt((value || 0) + button));
+      }
+    } else {
+      switch (button) {
+        case "AC": {
+          setValue(0);
+          setSavedValue(null);
+          setOperation(null);
+          break;
+        }
+        case "+/-": {
+          setValue(0 - value);
+          break;
+        }
+        case "=": {
+          executeOperation();
+          break;
+        }
+        default: {
+          const result = executeOperation();
+          setSavedValue(result);
+          setOperation(button);
+        }
+      }
+    }
+  };
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className={styles.appContainer}>
+      <div className={styles.calculator}>
+        <input value={value} />
+        <ul className={styles.container} onClick={handleButtonClick}>
+          {buttons.map((b) => (
+            <li className={styles.button}>
+              {b.map((i) => (
+                <span className={styles.buttonItem}>{i}</span>
+              ))}
+            </li>
+          ))}
+        </ul>
+      </div>
     </div>
   );
 }
