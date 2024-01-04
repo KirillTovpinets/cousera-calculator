@@ -1,5 +1,6 @@
 import { useState } from "react";
 import styles from "./App.module.css";
+import Button from "./Button";
 
 function App() {
   const buttons = [
@@ -41,7 +42,6 @@ function App() {
     setOperation(null);
     setExecuted(true);
     setValue(result);
-    debugger;
     return result;
   };
   const handleButtonClick = (e) => {
@@ -52,7 +52,7 @@ function App() {
     const button = e.target.innerHTML;
 
     if (!isNaN(parseInt(button))) {
-      if (!!operation || executed) {
+      if (executed) {
         setValue(parseInt(button));
         setExecuted(false);
       } else {
@@ -78,6 +78,7 @@ function App() {
           const result = executeOperation();
           setSavedValue(result);
           setOperation(button);
+          setExecuted(true);
         }
       }
     }
@@ -90,7 +91,7 @@ function App() {
           {buttons.map((b) => (
             <li className={styles.button}>
               {b.map((i) => (
-                <span className={styles.buttonItem}>{i}</span>
+                <Button char={i} />
               ))}
             </li>
           ))}
